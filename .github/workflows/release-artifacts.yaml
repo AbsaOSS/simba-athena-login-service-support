@@ -1,0 +1,22 @@
+name: Push Artifacts to Release
+on:
+  release:
+    types:
+      - created
+
+jobs:
+  push-artifacts:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - uses: olafurpg/setup-scala@v14
+        with:
+          java-version: "openjdk@1.11.0"
+      - run: mvn --batch-mode package
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: target/simba-athena-driver-login-service-support-1.0-jar-with-dependencies.jar
