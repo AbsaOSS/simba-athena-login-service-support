@@ -27,6 +27,11 @@ You can download the pre-built jar file from the latest release [here](https://g
    3. Have your Jwt2Token URL ready (.e.g something like https://my.domain.com/user-temporary-credentials-from-jwt-bearer)
    4. `AwsCredentialsProviderArguments=${user},${password},LS_URL_GOES_HERE,JWT2TOKEN_URL_GOES_HERE`
 
+### How to release
+ - Commit with final version in pom.xml (e.g. 1.2.3)
+ - Tag this commit with the said version (1.2.3)
+ - Create a release in GH linking the version (Release WF will build the jar and append it to the release)
+ - (optionally, but nice) Commit new non-final snapshot version - e.g. 1.3.0-SNAPSHOP (next minor)
 
 ## Contribution
 Inspired by from [https://github.com/neitomic/simba-athena-driver-sso-support](https://github.com/neitomic/simba-athena-driver-sso-support)
