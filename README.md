@@ -10,7 +10,7 @@ mvn package
 ```
 
 ### Use pre-built jar package
-Not yet available (TODO future: You can download the pre-built jar file from the latest release [here](https://github.com/AbsaOSS/simba-athena-login-service-support/releases))
+You can download the pre-built jar file from the latest release [here](https://github.com/AbsaOSS/simba-athena-login-service-support/releases)
 
 
 ### Config athena driver
