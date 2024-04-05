@@ -19,4 +19,4 @@ jobs:
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          files: target/simba-athena-driver-login-service-support-1.0-jar-with-dependencies.jar
+          files: target/simba-athena-driver-login-service-support-${{ github.event.release.tag_name }}-jar-with-dependencies.jar
