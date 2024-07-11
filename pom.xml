@@ -6,7 +6,7 @@
 
     <groupId>za.co.absa.loginsvc.athena</groupId>
     <artifactId>simba-athena-driver-login-service-support</artifactId>
-    <version>0.2.0-SNAPSHOT</version>
+    <version>0.2.0</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -23,7 +23,7 @@
             <artifactId>athena-jdbc42</artifactId>
             <version>2.0.32.1001</version>
             <scope>system</scope>
-            <systemPath>${project.basedir}/lib/AthenaJDBC42_2.0.32.1000.jar</systemPath>
+            <systemPath>${project.basedir}/lib/AthenaJDBC42-2.1.5.1000.jar</systemPath>
         </dependency>
 
         <dependency>
