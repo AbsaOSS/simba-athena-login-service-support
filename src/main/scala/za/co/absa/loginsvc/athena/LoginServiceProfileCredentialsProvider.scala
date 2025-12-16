@@ -17,6 +17,7 @@
 package za.co.absa.loginsvc.athena
 
 import com.amazonaws.auth.{AWSCredentials, AWSCredentialsProvider}
+import za.co.absa.loginsvc.athena.PropertiesLoginServiceProfileCredentialsProvider.LoginServiceProperties
 
 
 class LoginServiceProfileCredentialsProvider(user: String, pass: String, lsUrl: String, jwt2tokenSvcUrl: String) extends AWSCredentialsProvider {
@@ -31,12 +32,12 @@ class LoginServiceProfileCredentialsProvider(user: String, pass: String, lsUrl: 
     println(s"JWT2Token URL: $jwt2tokenSvcUrl")
   }
 
-  private val sessionManager: SessionManager = new SessionManager(user, pass, lsUrl, jwt2tokenSvcUrl)
+  private val sessionManager: SessionManager = new SessionManager(Some(LoginServiceProperties(user, pass, lsUrl, jwt2tokenSvcUrl)))
 
   private val credentialsPrintLimiter = new PrintFrequencyLimiter()
 
   override def getCredentials: AWSCredentials = {
-    val creds = sessionManager.getSessionCredentials // internally manages expiration and renewal
+    val creds = sessionManager.getSessionCredentials() // internally manages expiration and renewal
     credentialsPrintLimiter.printIfNotTooSoon(s"getCredentials: using creds: ${creds.getAWSAccessKeyId}, ...")
     creds
   }

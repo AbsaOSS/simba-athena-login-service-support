@@ -17,54 +17,62 @@ package za.co.absa.loginsvc.athena
 
 import com.simba.athena.amazonaws.auth.BasicSessionCredentials
 import requests.{RequestAuth, Response}
+import za.co.absa.loginsvc.athena.PropertiesLoginServiceProfileCredentialsProvider.LoginServiceProperties
 import za.co.absa.loginsvc.athena.model.{LsJwtTokens, StsSessionCredentials}
 
 import java.time.Duration
 import java.util.concurrent.atomic.AtomicReference
 
 class SessionManager(
-  val user: String,
-  val pass: String,
-  lsUrl: String,
-  jwt2tokenServiceUrl: String,
+  val lsProperties: Option[LoginServiceProperties],
   expirationAdvance: Duration = Duration.ofMinutes(10)
 ) {
 
   private val savedCreds: AtomicReference[Option[StsSessionCredentials]] = new AtomicReference[Option[StsSessionCredentials]](None)
 
-  def getSessionCredentials: BasicSessionCredentials = {
+  def getSessionCredentials(externalLsProperties: Option[LoginServiceProperties] = None): BasicSessionCredentials = {
+    if (externalLsProperties.exists(_.debug)) {
+      println(s"getSessionCredentials: external LS Properties are used")
+    }
+
+    val useProps = externalLsProperties.orElse(lsProperties).getOrElse {
+      throw new IllegalArgumentException("No LS Properties provided (neither internal nor external)")
+    }
+
     val sessionCreds = savedCreds.updateAndGet {
       case Some(creds) if !creds.expiresIn(expirationAdvance) =>
         // no need to renew
         Some(creds)
       case _ =>
         println("renewing creds")
-        val newCreds = getNewSessionCredentials()
+        val newCreds = getNewSessionCredentials(useProps)
         Some(newCreds)
     }
 
     sessionCreds.get.toBasicSessionCredentials
   }
 
-  private[athena] def getNewSessionCredentials(): StsSessionCredentials = {
-    val jwt = getJwtFromLs()
-    getTokenFromJwt(jwt)
+  private[athena] def getNewSessionCredentials(props: LoginServiceProperties): StsSessionCredentials = {
+    val jwt = getJwtFromLs(props)
+    getTokenFromJwt(jwt, props.jwt2tokenSvcUrl)
   }
 
-  private[athena] def getJwtFromLs(): String = {
-    val r: Response = requests.post(lsUrl, auth = new RequestAuth.Basic(user, pass))
+  private[athena] def getJwtFromLs(props: LoginServiceProperties): String = {
+    val r: Response = requests.post(props.lsUrl, auth = new RequestAuth.Basic(props.user, props.pass))
     if (r.statusCode == 200 && r.contentType.exists(_.contains("application/json"))) {
       val jsonPayload = r.text()
       val jwt = LsJwtTokens.fromJson(jsonPayload)
-      println(s"SessionManager.getJwtFromLs: jwt = $jwt")
+      if (props.debug) {
+        println(s"SessionManager.getJwtFromLs: jwt = $jwt")
+      }
       jwt
     } else {
-      throw new IllegalStateException(s"Login via LS @ $lsUrl failed: $r")
+      throw new IllegalStateException(s"Login via LS @ ${props.lsUrl} failed: $r")
     }
 
   }
 
-  private[athena] def getTokenFromJwt(jwt: String): StsSessionCredentials = {
+  private[athena] def getTokenFromJwt(jwt: String, jwt2tokenServiceUrl: String): StsSessionCredentials = {
 
     val r: Response = requests.post(jwt2tokenServiceUrl, RequestAuth.Bearer(jwt))
     if (r.statusCode == 200 && r.contentType.exists(_.contains("application/json"))) {
