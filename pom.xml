@@ -6,8 +6,7 @@
 
     <groupId>za.co.absa.loginsvc.athena</groupId>
     <artifactId>simba-athena-driver-login-service-support</artifactId>
-    <version>0.3.0</version>
-<!--    <packaging>eclipse-plugin</packaging>-->
+    <version>0.3.0-SNAPSHOT</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
