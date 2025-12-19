@@ -38,7 +38,7 @@ There are two classes available to choose from, depending on your use case:
 
    Set Driver properties as follows:
    1. `AwsCredentialsProviderClass=za.co.absa.loginsvc.athena.LoginServiceProfileCredentialsProvider`
-   2. `AwsCredentialsProviderArguments=${user},${password},LS_URL_GOES_HERE,JWT2TOKEN_URL_GOES_HERE`
+   2. `AwsCredentialsProviderArguments=${user},${password},<LS_URL_GOES_HERE>,<JWT2TOKEN_URL_GOES_HERE>`
 
    With this provider, you can use DBeaver's standard username and password fields to provide your Login Service credentials.
 
@@ -48,7 +48,7 @@ There are two classes available to choose from, depending on your use case:
    In DriverSettings, set the `Class Name` to: `za.co.absa.loginsvc.athena.driver.AthenaDelegatingDriver`
 
    Set Driver properties as follows:
-   1. `AwsCredentialsProviderClass=za.co.absa.loginsvc.athena.LoginServiceProfileCredentialsProvider`
+   1. `AwsCredentialsProviderClass=za.co.absa.loginsvc.athena.PropertiesLoginServiceProfileCredentialsProvider`
    2. Define a (new) User property `ls_user` with your username
    3. Define a (new) User property `ls_password` with your password (this will get masked and secured by DBeaver)
    4. Define a (new) User property `ls_url` with value `<LS_URL_GOES_HERE>`
