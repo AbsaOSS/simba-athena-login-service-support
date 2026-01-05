@@ -17,8 +17,7 @@ package za.co.absa.loginsvc.athena
 
 import com.simba.athena.amazonaws.auth.BasicSessionCredentials
 import requests.{RequestAuth, Response}
-import za.co.absa.loginsvc.athena.PropertiesLoginServiceProfileCredentialsProvider.LoginServiceProperties
-import za.co.absa.loginsvc.athena.model.{LsJwtTokens, StsSessionCredentials}
+import za.co.absa.loginsvc.athena.model.{LsJwtTokens, StsSessionCredentials, LoginServiceProperties}
 
 import java.time.Duration
 import java.util.concurrent.atomic.AtomicReference

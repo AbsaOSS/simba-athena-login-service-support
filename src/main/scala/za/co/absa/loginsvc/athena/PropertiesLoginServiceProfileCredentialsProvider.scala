@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 ABSA Group Limited
+ * Copyright 2025 ABSA Group Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,20 +17,8 @@
 package za.co.absa.loginsvc.athena
 
 import com.amazonaws.auth.{AWSCredentials, AWSCredentialsProvider}
-import za.co.absa.loginsvc.athena.PropertiesLoginServiceProfileCredentialsProvider.LoginServiceProperties
 import za.co.absa.loginsvc.athena.ctx.DriverContext
-
-import java.util.Properties
-
-object PropertiesLoginServiceProfileCredentialsProvider {
-  case class LoginServiceProperties(
-    user: String,
-    pass: String,
-    lsUrl: String,
-    jwt2tokenSvcUrl: String,
-    debug: Boolean = false
-  )
-}
+import za.co.absa.loginsvc.athena.model.LoginServiceProperties
 
 class PropertiesLoginServiceProfileCredentialsProvider() extends AWSCredentialsProvider {
   println("=== PropertiesLoginServiceProfileCredentialsProvider ===")

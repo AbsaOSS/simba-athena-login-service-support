@@ -17,7 +17,7 @@
 package za.co.absa.loginsvc.athena
 
 import com.amazonaws.auth.{AWSCredentials, AWSCredentialsProvider}
-import za.co.absa.loginsvc.athena.PropertiesLoginServiceProfileCredentialsProvider.LoginServiceProperties
+import za.co.absa.loginsvc.athena.model.LoginServiceProperties
 
 
 class LoginServiceProfileCredentialsProvider(user: String, pass: String, lsUrl: String, jwt2tokenSvcUrl: String) extends AWSCredentialsProvider {
