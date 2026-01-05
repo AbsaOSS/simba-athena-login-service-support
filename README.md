@@ -34,7 +34,7 @@ There are two classes available to choose from, depending on your use case:
    This option works well for DBeaver versions up to 23.1. (this is the last minor version where `${password}` token
    is available to be used in `AwsCredentialsProviderArguments` value).
 
-   In DriverSettings, check that the `Class Name` to: `com.simba.athena.jdbc.Driver` (default value).
+   In DriverSettings, check that the `Class Name` is: `com.simba.athena.jdbc.Driver` (default value).
 
    Set Driver properties as follows:
    1. `AwsCredentialsProviderClass=za.co.absa.loginsvc.athena.LoginServiceProfileCredentialsProvider`
