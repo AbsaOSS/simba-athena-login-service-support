@@ -31,7 +31,9 @@ class PropertiesLoginServiceProfileCredentialsProvider() extends AWSCredentialsP
   def setArguments(args: String): Unit =
     arguments = args
 
-  private val sessionManager: SessionManager = new SessionManager(None)
+  private[athena] def initializeSessionManager(): SessionManager = new SessionManager(None)
+
+  private val sessionManager: SessionManager = initializeSessionManager()
   private val credentialsPrintLimiter = new PrintFrequencyLimiter()
 
   private[athena] def initializeDriverContextWithProperties(): Properties = {
@@ -44,7 +46,7 @@ class PropertiesLoginServiceProfileCredentialsProvider() extends AWSCredentialsP
     props
   }
 
-  private def loadLsProperties: LoginServiceProperties = {
+  private[athena] def loadLsProperties: LoginServiceProperties = {
     val props = initializeDriverContextWithProperties()
 
     val lsDebug = props.getProperty("ls_debug", "false").toBoolean
