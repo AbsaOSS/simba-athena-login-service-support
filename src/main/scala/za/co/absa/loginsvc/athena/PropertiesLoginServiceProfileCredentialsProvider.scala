@@ -20,6 +20,8 @@ import com.amazonaws.auth.{AWSCredentials, AWSCredentialsProvider}
 import za.co.absa.loginsvc.athena.ctx.DriverContext
 import za.co.absa.loginsvc.athena.model.LoginServiceProperties
 
+import java.util.Properties
+
 class PropertiesLoginServiceProfileCredentialsProvider() extends AWSCredentialsProvider {
   println("=== PropertiesLoginServiceProfileCredentialsProvider ===")
 
@@ -29,33 +31,59 @@ class PropertiesLoginServiceProfileCredentialsProvider() extends AWSCredentialsP
   def setArguments(args: String): Unit =
     arguments = args
 
-  private val sessionManager: SessionManager = new SessionManager(None)
+  private[athena] def initializeSessionManager(): SessionManager = new SessionManager(None)
+
+  private val sessionManager: SessionManager = initializeSessionManager()
   private val credentialsPrintLimiter = new PrintFrequencyLimiter()
 
-  private def loadLsProperties: LoginServiceProperties = {
+  private[athena] def initializeDriverContextWithProperties(): Properties = {
     val props = DriverContext.get
     if (props == null)
       throw new IllegalStateException(
         "DriverContext not initialized. Make sure that your Athena driver class name is: za.co.absa.loginsvc.athena.driver.AthenaDelegatingDriver"
       )
 
-    val lsUsername = props.getProperty("ls_user")
-    val lsPassword = props.getProperty("ls_password")
-    val lsUrl = props.getProperty("ls_url")
-    val jwt2tokenUrl = props.getProperty("ls_jwt2token_url")
+    props
+  }
+
+  private[athena] def loadLsProperties: LoginServiceProperties = {
+    val props = initializeDriverContextWithProperties()
+
     val lsDebug = props.getProperty("ls_debug", "false").toBoolean
 
-    if (lsUsername == null || lsUsername.isEmpty)
-      throw new RuntimeException("Config field 'ls_user' is missing!")
-
-    if (lsPassword == null || lsPassword.isEmpty)
-      throw new RuntimeException("Config field 'ls_password' is missing!")
+    val lsUrl = props.getProperty("ls_url")
+    val jwt2tokenUrl = props.getProperty("ls_jwt2token_url")
 
     if (lsUrl == null || lsUrl.isEmpty)
       throw new RuntimeException("Config field 'ls_url' is missing!")
-
     if (jwt2tokenUrl == null || jwt2tokenUrl.isEmpty)
       throw new RuntimeException("Config field 'ls_jwt2token_url' is missing!")
+
+    val user = props.getProperty("user") // default UI field value
+    val lsUsername = props.getProperty("ls_user") // optional custom override
+
+    val password = props.getProperty("password") //
+    val lsPassword = props.getProperty("ls_password") // optional custom override
+
+
+    val usernameUsed = if (lsUsername == null || lsUsername.isEmpty) {
+      user
+    } else {
+      if (lsDebug) {
+        println(s"username override from ls_username is used: $lsUsername")
+      }
+      lsUsername
+    }
+
+    val passwordUsed = if (lsPassword == null || lsPassword.isEmpty) {
+      password
+    } else {
+      if (lsDebug) {
+        println(s"password override from ls_password is used: *** (${lsPassword.length} chars)")
+      }
+      lsPassword
+    }
+
 
     if (lsDebug) {
       for (key <- props.keySet().toArray()) {
@@ -68,14 +96,14 @@ class PropertiesLoginServiceProfileCredentialsProvider() extends AWSCredentialsP
       }
     }
 
-    LoginServiceProperties(lsUsername, lsPassword, lsUrl, jwt2tokenUrl, lsDebug)
+    LoginServiceProperties(usernameUsed, passwordUsed, lsUrl, jwt2tokenUrl, lsDebug)
   }
 
   override def getCredentials: AWSCredentials = {
     val lsProps = loadLsProperties
 
     val creds = sessionManager.getSessionCredentials(Some(lsProps)) // internally manages expiration and renewal
-    credentialsPrintLimiter.printIfNotTooSoon(s"getCredentials: using creds: ${creds.getAWSAccessKeyId}, ...")
+    credentialsPrintLimiter.printIfNotTooSoon(s"getCredentials: ${lsProps.user}/*** (${lsProps.pass.length} chars) -> using creds: ${creds.getAWSAccessKeyId}, ...")
     creds
   }
 

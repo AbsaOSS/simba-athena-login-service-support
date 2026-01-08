@@ -49,14 +49,19 @@ There are two classes available to choose from, depending on your use case:
 
    Set Driver properties as follows:
    1. `AwsCredentialsProviderClass=za.co.absa.loginsvc.athena.PropertiesLoginServiceProfileCredentialsProvider`
-   2. Define a (new) User property `ls_user` with your username
-   3. Define a (new) User property `ls_password` with your password (this will get masked and secured by DBeaver)
-   4. Define a (new) User property `ls_url` with value `<LS_URL_GOES_HERE>`
-   5. Define a (new) User property `ls_jwt2token_url` with value `<JWT2TOKEN_URL_GOES_HERE>`
-   6. Leave `AwsCredentialsProviderArguments` unset
+   2. Define a (new) User property `ls_url` with value `<LS_URL_GOES_HERE>`
+   3. Define a (new) User property `ls_jwt2token_url` with value `<JWT2TOKEN_URL_GOES_HERE>`
+   4. Leave `AwsCredentialsProviderArguments` unset
 
-   With this provider, DBeaver's standard username and password fields are ignored (User properties values are used instead).
-   You may enter e.g. `notused`/`notused` for username/password value.
+   By default, this provider will use DBeaver's native user/password fields. Tested to work with DBeaver 25.3.0.
+
+###### Alternative way to provide username/password
+   On the off chance that this behavior get compromised (as witnessed with `${password}` above), the provider will 
+   attempt to read from `ls_user` and `ls_password` user-defined properties instead if they are present 
+   (ignoring DBeaver's native fields in that case). 
+
+   User property `ls_password` with your password will get masked in the UI.
+
    
 ### How to release
  - Commit with final version in pom.xml (e.g. 1.2.3)
